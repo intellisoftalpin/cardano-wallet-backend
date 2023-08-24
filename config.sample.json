@@ -1,0 +1,23 @@
+{
+    "wallets": {
+        "1": {
+            "mnemonic_sentence": "mnemonic sentence",
+            "assets": [
+                {
+                    "policy_id": "",
+                    "asset_id": "",
+                    "asset_name": "",
+                    "asset_unit": "",
+                    "lovelace_quantity": 1500000,
+                    "asset_quantity": 7500,
+                    "asset_decimals": 0,
+                    "fee": 180000,
+                    "deposit": 1500000,
+                    "processing_fee": 1000000,
+                    "buffer": 0,
+                    "reward_address": "addr...."
+                }
+            ]
+        }
+    }
+}

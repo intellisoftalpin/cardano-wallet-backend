@@ -1,0 +1,5 @@
+.env.local
+certs
+.vscode
+config.json
+__debug_bin

@@ -1,0 +1,49 @@
+version: '3'
+services:
+  cardano-wallet:
+    image: cardanofoundation/cardano-wallet:2023.7.18
+    volumes:
+      - wallet-${NETWORK}-db:/wallet-db
+      - ${PATH_TO_SOCKET}:/ipc
+    ports:
+      - 8090:8090
+    entrypoint: []
+    command: bash -c "
+        ([[ $$NETWORK == \"mainnet\" ]] && $$CMD --mainnet) ||
+        ($$CMD --testnet /config/${NETWORK}/genesis-byron.json) "
+    environment:
+      CMD: "cardano-wallet serve --node-socket /ipc/${SOCKET_FILE} --database /wallet-db --listen-address 0.0.0.0"
+      NETWORK: ${NETWORK}
+      PATH_TO_SOCKET: "${PATH_TO_SOCKET}"
+      SOCKET_FILE: "${SOCKET_FILE}"
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        compress: "true"
+        max-file: "10"
+        max-size: "50m"
+
+  cardano-wallet-backend:
+    build: .
+    depends_on:
+      cardano-wallet:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: "${SERVER_PORT}"
+      CONFIG_PATH: "/etc/cardano-wallet-backend/config.json"
+      CARDANO_WALLET_URL: "http://cardano-wallet:8090"
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+      - cardano-wallet-backend-data-${NETWORK}:/data
+      - ./config.json:/etc/cardano-wallet-backend/config.json
+
+volumes:
+  cardano-wallet-backend-data-mainnet:
+  cardano-wallet-backend-data-preprod:
+  wallet-mainnet-db:
+  wallet-preprod-db:
+  # cwallet_node-ipc:
+  #   external: true
