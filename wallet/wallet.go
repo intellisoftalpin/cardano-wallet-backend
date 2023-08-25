@@ -6,7 +6,7 @@ import (
 
 	"github.com/intellisoftalpin/cardano-wallet-backend/config"
 	"github.com/intellisoftalpin/cardano-wallet-backend/repo"
-	walletPB "gitlab.com/encryptoteam/createtoken/token-lib-proto/proto-gen/wallet"
+	walletPB "github.com/intellisoftalpin/proto/proto-gen/wallet"
 )
 
 type Server struct {

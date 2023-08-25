@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 
-	walletPB "gitlab.com/encryptoteam/createtoken/token-lib-proto/proto-gen/wallet"
+	walletPB "github.com/intellisoftalpin/proto/proto-gen/wallet"
 
 	"github.com/intellisoftalpin/cardano-wallet-backend/config"
 	"github.com/intellisoftalpin/cardano-wallet-backend/wallet"

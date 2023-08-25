@@ -3,9 +3,9 @@ module github.com/intellisoftalpin/cardano-wallet-backend
 go 1.19
 
 require (
+	github.com/intellisoftalpin/proto v0.0.1
 	github.com/joho/godotenv v1.5.1
 	github.com/sergey-shpilevskiy/go-cert v0.0.3
-	gitlab.com/encryptoteam/createtoken/token-lib-proto v0.0.15
 	google.golang.org/grpc v1.57.0
 )
 
