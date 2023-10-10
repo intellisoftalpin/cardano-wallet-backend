@@ -21,10 +21,13 @@ type WalletResponse struct {
 	Passphrase     struct {
 		LastUpdatedAt string `json:"last_updated_at"`
 	} `json:"passphrase"`
-	State struct {
-		Status string `json:"status"`
-	} `json:"state"`
-	Tip Tip `json:"tip"`
+	State WalletState `json:"state"`
+	Tip   Tip         `json:"tip"`
+}
+
+type WalletState struct {
+	Status   string   `json:"status"`
+	Progress Quantity `json:"progress"`
 }
 
 type Balance struct {
@@ -231,13 +234,6 @@ type WalletAddress struct {
 	DerivationPath []string `json:"derivation_path"`
 }
 
-type Wallet struct {
-	ID         string  `json:"id"`
-	Address    string  `json:"address"`
-	Passphrase string  `json:"-"`
-	Assets     []Asset `json:"assets"`
-}
-
 type CreateWalletRequest struct {
 	Name     string   `json:"name"`
 	Mnemonic []string `json:"mnemonic_sentence"`
@@ -265,21 +261,28 @@ type NetworkInfo struct {
 	} `json:"next_epoch"`
 	NodeEra string `json:"node_era"`
 	NodeTip struct {
-		AbsoluteSlotNumber uint64 `json:"absolute_slot_number"`
-		EpochNumber        uint64 `json:"epoch_number"`
-		Height             struct {
-			Quantity uint64 `json:"quantity"`
-			Unit     string `json:"unit"`
-		} `json:"height"`
-		SlotNumber uint64 `json:"slot_number"`
-		Time       string `json:"time"`
+		AbsoluteSlotNumber uint64   `json:"absolute_slot_number"`
+		EpochNumber        uint64   `json:"epoch_number"`
+		Height             Quantity `json:"height"`
+		SlotNumber         uint64   `json:"slot_number"`
+		Time               string   `json:"time"`
 	} `json:"node_tip"`
 	SyncProgress struct {
-		Status   string `json:"status"`
-		Progress struct {
-			Quantity uint64 `json:"quantity"`
-			Unit     string `json:"unit"`
-		} `json:"progress"`
+		Status   string   `json:"status"`
+		Progress Quantity `json:"progress"`
 	} `json:"sync_progress"`
 	WalletMode string `json:"wallet_mode"`
 }
+
+// type Wallets []Wallet
+
+// type Wallet struct {
+// 	ID string `json:"id"`
+// 	// Address    string  `json:"address"`
+// 	// Passphrase string  `json:"-"`
+// 	// Assets     []Asset `json:"assets"`
+// 	State struct {
+// 		Status   string   `json:"status"`
+// 		Progress Quantity `json:"state"`
+// 	}
+// }

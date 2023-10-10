@@ -3,20 +3,40 @@ package repo
 import (
 	"fmt"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/intellisoftalpin/cardano-wallet-backend/config"
 	cwalletapi "github.com/intellisoftalpin/cardano-wallet-backend/cwallet-api"
 )
 
 type TransactionRepo struct {
-	config *config.Config
+	// config *config.Config
+
+	// wallets map[string]wallet
+
+	wallets wallets
 
 	CardanoWalletApi *cwalletapi.CardanoWalletApi
 }
 
 func NewTransactionRepo(config *config.Config) (t *TransactionRepo, err error) {
 	t = &TransactionRepo{
-		config: config,
+		// config:  config,
+		// wallets: make(map[string]wallet),
+		wallets: wallets{
+			mx:      &sync.RWMutex{},
+			wallets: make(map[string]wallet),
+		},
+	}
+
+	for _, w := range config.Wallets {
+		t.wallets.SetWallet(w.ID, wallet{
+			WalletConfig: w,
+			state: cwalletapi.WalletState{
+				Status: "syncing",
+			},
+		})
 	}
 
 	t.CardanoWalletApi, err = cwalletapi.NewCardanoWalletApi(config)
@@ -24,11 +44,34 @@ func NewTransactionRepo(config *config.Config) (t *TransactionRepo, err error) {
 		return nil, err
 	}
 
+	go func() {
+		timer := time.NewTicker(5 * time.Second)
+
+		for range timer.C {
+			// get wallet state from cardano-wallet
+
+			wallets := t.wallets.GetWallets()
+
+			for walletID := range wallets {
+				wallet, err := t.CardanoWalletApi.GetWalletData(walletID)
+				if err != nil {
+					t.wallets.SetWalletState(walletID, cwalletapi.WalletState{
+						Status: "syncing",
+					})
+					continue
+				}
+
+				t.wallets.SetWalletState(walletID, wallet.State)
+			}
+		}
+
+	}()
+
 	return t, nil
 }
 
 func (t *TransactionRepo) DecodeTransaction(txHash, policyID, assetID string) (tx cwalletapi.Transaction, err error) {
-	wallet, _, err := t.getWallet(policyID, assetID)
+	wallet, _, err := t.wallets.GetWalletByPolicyID(policyID, assetID)
 	if err != nil {
 		return tx, err
 	}
@@ -51,7 +94,7 @@ func (t *TransactionRepo) SubmitExternalTransaction(tx string) (txHash string, e
 }
 
 func (t *TransactionRepo) GetTransaction(txHash, policyID, assetID string) (tx []byte, err error) {
-	wallet, _, err := t.getWallet(policyID, assetID)
+	wallet, _, err := t.wallets.GetWalletByPolicyID(policyID, assetID)
 	if err != nil {
 		return tx, err
 	}
@@ -65,7 +108,7 @@ func (t *TransactionRepo) GetTransaction(txHash, policyID, assetID string) (tx [
 }
 
 func (t *TransactionRepo) CreateTransaction(txCBOR, policyID, assetID string) (rawTx []byte, txHash, addressTo, transferAmount, assetAmount, assetDecimals string, err error) {
-	wallet, asset, err := t.getWallet(policyID, assetID)
+	wallet, asset, err := t.wallets.GetWalletByPolicyID(policyID, assetID)
 	if err != nil {
 		return rawTx, txHash, addressTo, transferAmount, assetAmount, assetDecimals, err
 	}
@@ -98,7 +141,7 @@ func (t *TransactionRepo) CreateTransaction(txCBOR, policyID, assetID string) (r
 }
 
 func (t *TransactionRepo) CheckTokenBalance(txCBOR, policyID, assetID string) error {
-	wallet, walletAsset, err := t.getWallet(policyID, assetID)
+	wallet, walletAsset, err := t.wallets.GetWalletByPolicyID(policyID, assetID)
 	if err != nil {
 		return err
 	}
@@ -133,10 +176,14 @@ func (t *TransactionRepo) CheckTokenBalance(txCBOR, policyID, assetID string) er
 }
 
 func (t *TransactionRepo) GetAllTokens() (walletAssets []cwalletapi.WalletAsset, err error) {
-	wallets := t.config.Wallets
+	wallets := t.wallets.GetWallets()
 
 	for _, w := range wallets {
 		walletID := w.ID
+
+		if w.state.Status != "ready" {
+			continue
+		}
 
 		address, err := t.CardanoWalletApi.GetAddress(walletID)
 		if err != nil {
@@ -191,7 +238,7 @@ func (t *TransactionRepo) GetTokenData(tokenID string) (token cwalletapi.WalletA
 
 	policyID, assetID := tID[0], tID[1]
 
-	wallet, asset, err := t.getWallet(policyID, assetID)
+	wallet, asset, err := t.wallets.GetWalletByPolicyID(policyID, assetID)
 	if err != nil {
 		return token, err
 	}
@@ -234,7 +281,7 @@ func (t *TransactionRepo) GetTokenPrice(tokenID string) (price uint64, err error
 
 	policyID, assetID := tID[0], tID[1]
 
-	_, asset, err := t.getWallet(policyID, assetID)
+	_, asset, err := t.wallets.GetWalletByPolicyID(policyID, assetID)
 	if err != nil {
 		return price, err
 	}
@@ -243,19 +290,6 @@ func (t *TransactionRepo) GetTokenPrice(tokenID string) (price uint64, err error
 }
 
 // ----------------------------------------------------------------------
-
-func (t *TransactionRepo) getWallet(policyID, assetID string) (wallet config.WalletConfig, asset config.Asset, err error) {
-	for _, w := range t.config.Wallets {
-		assets := w.Assets
-		for _, asset := range assets {
-			if asset.PolicyID == policyID && asset.AssetID == assetID {
-				return w, asset, nil
-			}
-		}
-	}
-
-	return wallet, asset, fmt.Errorf("wallet not found")
-}
 
 func (c *TransactionRepo) ConstructCreateTransactionRequest(tx cwalletapi.Transaction, passphrase string, asset config.Asset) (req cwalletapi.CreateTransactionRequest, err error) {
 	address := tx.Metadata["1010"].String + tx.Metadata["1011"].String
