@@ -274,7 +274,7 @@ type NetworkInfo struct {
 	WalletMode string `json:"wallet_mode"`
 }
 
-// type Wallets []Wallet
+type Wallets []WalletResponse
 
 // type Wallet struct {
 // 	ID string `json:"id"`

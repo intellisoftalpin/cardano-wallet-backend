@@ -205,3 +205,25 @@ func (s *Server) GetWalletNetworkInfo(ctx context.Context, in *walletPB.Empty) (
 		WalletMode: networkInfo.WalletMode,
 	}, nil
 }
+
+func (s *Server) GetWalletsState(ctx context.Context, in *walletPB.Empty) (*walletPB.GetWalletsStateResponse, error) {
+	walletsState, err := s.TransactionRepo.GetWalletsState()
+	if err != nil {
+		return nil, err
+	}
+
+	var walletsStatePB []*walletPB.WalletState
+	for _, walletState := range walletsState {
+		walletsStatePB = append(walletsStatePB, &walletPB.WalletState{
+			Status: walletState.Status,
+			Progress: &walletPB.Quantity{
+				Quantity: walletState.Progress.Quantity,
+				Unit:     walletState.Progress.Unit,
+			},
+		})
+	}
+
+	return &walletPB.GetWalletsStateResponse{
+		WalletsState: walletsStatePB,
+	}, nil
+}

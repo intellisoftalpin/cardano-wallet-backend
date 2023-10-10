@@ -12,11 +12,9 @@ import (
 
 type TransactionRepo struct {
 	// config *config.Config
-
 	// wallets map[string]wallet
 
-	wallets wallets
-
+	wallets          wallets
 	CardanoWalletApi *cwalletapi.CardanoWalletApi
 }
 
@@ -351,3 +349,31 @@ func (c *TransactionRepo) GetWalletNetworkInfo() (networkInfo cwalletapi.Network
 
 	return networkInfo, err
 }
+
+func (c *TransactionRepo) GetWalletsState() (walletsState []cwalletapi.WalletState, err error) {
+	walletsState = make([]cwalletapi.WalletState, 0)
+
+	wallets, err := c.CardanoWalletApi.GetListWallets()
+	if err != nil {
+		return walletsState, err
+	}
+
+	for _, wallet := range wallets {
+		walletsState = append(walletsState, wallet.State)
+	}
+
+	return walletsState, err
+}
+
+// func (t *TransactionRepo) getWallet(policyID, assetID string) (wallet wallet, asset config.Asset, err error) {
+// 	for _, w := range t.wallets {
+// 		assets := w.Assets
+// 		for _, asset := range assets {
+// 			if asset.PolicyID == policyID && asset.AssetID == assetID {
+// 				return w, asset, nil
+// 			}
+// 		}
+// 	}
+
+// 	return wallet, asset, fmt.Errorf("wallet not found")
+// }

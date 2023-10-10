@@ -345,3 +345,27 @@ func (c *CardanoWalletApi) GetWalletNetworkInformation() (info NetworkInfo, err 
 
 	return info, err
 }
+
+// Return a list of known wallets, ordered from oldest to newest.
+func (c *CardanoWalletApi) GetListWallets() (wallets Wallets, err error) {
+	resp, err := http.Get(c.url + "/v2/wallets")
+	if err != nil {
+		return wallets, err
+	}
+	defer resp.Body.Close()
+
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return wallets, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return wallets, fmt.Errorf("network info not found: %s - %s", resp.Status, string(b))
+	}
+
+	if err = json.Unmarshal(b, &wallets); err != nil {
+		return wallets, err
+	}
+
+	return wallets, err
+}
