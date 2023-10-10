@@ -27,7 +27,7 @@ type WalletResponse struct {
 
 type WalletState struct {
 	Status   string   `json:"status"`
-	Progress Quantity `json:"progress"`
+	Progress Progress `json:"progress"`
 }
 
 type Balance struct {
@@ -269,9 +269,14 @@ type NetworkInfo struct {
 	} `json:"node_tip"`
 	SyncProgress struct {
 		Status   string   `json:"status"`
-		Progress Quantity `json:"progress"`
+		Progress Progress `json:"progress"`
 	} `json:"sync_progress"`
 	WalletMode string `json:"wallet_mode"`
+}
+
+type Progress struct {
+	Quantity float32 `json:"quantity"`
+	Unit     string  `json:"unit"`
 }
 
 type Wallets []WalletResponse

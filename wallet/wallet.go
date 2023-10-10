@@ -197,7 +197,7 @@ func (s *Server) GetWalletNetworkInfo(ctx context.Context, in *walletPB.Empty) (
 		},
 		SyncProgress: &walletPB.SyncProgress{
 			Status: networkInfo.SyncProgress.Status,
-			Progress: &walletPB.Quantity{
+			Progress: &walletPB.Progress{
 				Quantity: networkInfo.SyncProgress.Progress.Quantity,
 				Unit:     networkInfo.SyncProgress.Progress.Unit,
 			},
@@ -216,7 +216,7 @@ func (s *Server) GetWalletsState(ctx context.Context, in *walletPB.Empty) (*wall
 	for _, walletState := range walletsState {
 		walletsStatePB = append(walletsStatePB, &walletPB.WalletState{
 			Status: walletState.Status,
-			Progress: &walletPB.Quantity{
+			Progress: &walletPB.Progress{
 				Quantity: walletState.Progress.Quantity,
 				Unit:     walletState.Progress.Unit,
 			},
