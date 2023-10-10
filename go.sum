@@ -48,8 +48,8 @@ github.com/google/go-cmp v0.5.6/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
-github.com/intellisoftalpin/proto v0.0.1 h1:GOReRkC4CFhtDnSzXRgRv42uePfi8g348sBen0m0p8s=
-github.com/intellisoftalpin/proto v0.0.1/go.mod h1:o5GGarRSR/p9dKPU9hMx86Tyb7rQaA37MOmLVrx8ufM=
+github.com/intellisoftalpin/proto v0.0.3 h1:2kD7h/jVebLwjOFM2yTnN1xlqD6Gn33UbJjjwcXICbw=
+github.com/intellisoftalpin/proto v0.0.3/go.mod h1:o5GGarRSR/p9dKPU9hMx86Tyb7rQaA37MOmLVrx8ufM=
 github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=
 github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=

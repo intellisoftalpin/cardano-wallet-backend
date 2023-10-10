@@ -320,3 +320,28 @@ func GetWalletsPasswords(url string, wallets map[string]config.WalletConfig) (fu
 
 	return fullWallet, nil
 }
+
+// --------------------------------------------------------
+
+func (c *CardanoWalletApi) GetWalletNetworkInformation() (info NetworkInfo, err error) {
+	resp, err := http.Get(c.url + "/v2/network/information")
+	if err != nil {
+		return info, err
+	}
+	defer resp.Body.Close()
+
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return info, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return info, fmt.Errorf("network info not found: %s - %s", resp.Status, string(b))
+	}
+
+	if err = json.Unmarshal(b, &info); err != nil {
+		return info, err
+	}
+
+	return info, err
+}

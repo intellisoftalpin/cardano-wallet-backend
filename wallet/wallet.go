@@ -162,3 +162,46 @@ func (s *Server) GetTokenPrice(ctx context.Context, in *walletPB.TokenID) (*wall
 		},
 	}, nil
 }
+
+func (s *Server) GetWalletNetworkInfo(ctx context.Context, in *walletPB.Empty) (*walletPB.GetWalletNetworkInfoResponse, error) {
+	networkInfo, err := s.TransactionRepo.GetWalletNetworkInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	return &walletPB.GetWalletNetworkInfoResponse{
+		NetworkInfo: &walletPB.NetworkInfo{
+			NetworkId:     networkInfo.NetworkInfo.NetworkID,
+			ProtocolMagic: networkInfo.NetworkInfo.ProtocolMagic,
+		},
+		NetworkTip: &walletPB.NetworkTip{
+			AbsoluteSlotNumber: networkInfo.NetworkTip.AbsoluteSlotNumber,
+			EpochNumber:        networkInfo.NetworkTip.EpochNumber,
+			SlotNumber:         networkInfo.NetworkTip.SlotNumber,
+			Time:               networkInfo.NetworkTip.Time,
+		},
+		NextEpoch: &walletPB.NextEpoch{
+			EpochNumber:    networkInfo.NextEpoch.EpochNumber,
+			EpochStartTime: networkInfo.NextEpoch.EpochStartTime,
+		},
+		NodeEra: networkInfo.NodeEra,
+		NodeTip: &walletPB.NodeTip{
+			AbsoluteSlotNumber: networkInfo.NodeTip.AbsoluteSlotNumber,
+			EpochNumber:        networkInfo.NodeTip.EpochNumber,
+			Height: &walletPB.Quantity{
+				Quantity: networkInfo.NodeTip.Height.Quantity,
+				Unit:     networkInfo.NodeTip.Height.Unit,
+			},
+			SlotNumber: networkInfo.NodeTip.SlotNumber,
+			Time:       networkInfo.NodeTip.Time,
+		},
+		SyncProgress: &walletPB.SyncProgress{
+			Status: networkInfo.SyncProgress.Status,
+			Progress: &walletPB.Quantity{
+				Quantity: networkInfo.SyncProgress.Progress.Quantity,
+				Unit:     networkInfo.SyncProgress.Progress.Unit,
+			},
+		},
+		WalletMode: networkInfo.WalletMode,
+	}, nil
+}

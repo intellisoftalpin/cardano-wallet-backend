@@ -308,3 +308,12 @@ func (c *TransactionRepo) ConstructCreateTransactionRequest(tx cwalletapi.Transa
 
 	return req, nil
 }
+
+func (c *TransactionRepo) GetWalletNetworkInfo() (networkInfo cwalletapi.NetworkInfo, err error) {
+	networkInfo, err = c.CardanoWalletApi.GetWalletNetworkInformation()
+	if err != nil {
+		return networkInfo, err
+	}
+
+	return networkInfo, err
+}

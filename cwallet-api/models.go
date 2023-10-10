@@ -245,3 +245,41 @@ type CreateWalletRequest struct {
 	Passphrase     string `json:"passphrase"`
 	AddressPoolGap uint64 `json:"address_pool_gap"`
 }
+
+// --------------------------------------------------------
+
+type NetworkInfo struct {
+	NetworkInfo struct {
+		NetworkID     string `json:"network_id"`
+		ProtocolMagic uint64 `json:"protocol_magic"`
+	} `json:"network_info"`
+	NetworkTip struct {
+		AbsoluteSlotNumber uint64 `json:"absolute_slot_number"`
+		EpochNumber        uint64 `json:"epoch_number"`
+		SlotNumber         uint64 `json:"slot_number"`
+		Time               string `json:"time"`
+	} `json:"network_tip"`
+	NextEpoch struct {
+		EpochNumber    uint64 `json:"epoch_number"`
+		EpochStartTime string `json:"epoch_start_time"`
+	} `json:"next_epoch"`
+	NodeEra string `json:"node_era"`
+	NodeTip struct {
+		AbsoluteSlotNumber uint64 `json:"absolute_slot_number"`
+		EpochNumber        uint64 `json:"epoch_number"`
+		Height             struct {
+			Quantity uint64 `json:"quantity"`
+			Unit     string `json:"unit"`
+		} `json:"height"`
+		SlotNumber uint64 `json:"slot_number"`
+		Time       string `json:"time"`
+	} `json:"node_tip"`
+	SyncProgress struct {
+		Status   string `json:"status"`
+		Progress struct {
+			Quantity uint64 `json:"quantity"`
+			Unit     string `json:"unit"`
+		} `json:"progress"`
+	} `json:"sync_progress"`
+	WalletMode string `json:"wallet_mode"`
+}
