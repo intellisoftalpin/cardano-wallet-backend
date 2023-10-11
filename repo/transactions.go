@@ -28,6 +28,11 @@ func NewTransactionRepo(config *config.Config) (t *TransactionRepo, err error) {
 		},
 	}
 
+	t.CardanoWalletApi, err = cwalletapi.NewCardanoWalletApi(config)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, w := range config.Wallets {
 		t.wallets.SetWallet(w.ID, wallet{
 			WalletConfig: w,
@@ -35,11 +40,6 @@ func NewTransactionRepo(config *config.Config) (t *TransactionRepo, err error) {
 				Status: "syncing",
 			},
 		})
-	}
-
-	t.CardanoWalletApi, err = cwalletapi.NewCardanoWalletApi(config)
-	if err != nil {
-		return nil, err
 	}
 
 	go func() {
